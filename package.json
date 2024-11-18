@@ -1,0 +1,49 @@
+{
+  "name": "scanner-app",
+  "author": "Ahmed Sherif",
+  "description": "An Electron application with React and Vite",
+  "private": true,
+  "version": "0.0.0",
+  "main": "electron/main.mjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:dev": "concurrently \"vite\" \"wait-on tcp:5173 && electron .\"",
+    "electron:build": "vite build && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "react": "¹⁸.3.1",
+    "react-dom": "¹⁸.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "¹⁸.3.3",
+    "@types/react-dom": "¹⁸.3.0",
+    "@vitejs/plugin-react": "⁴.3.1",
+    "concurrently": "⁸.2.2",
+    "electron": "³¹.3.1",
+    "electron-builder": "²⁴.13.3",
+    "electron-is-dev": "³.0.1",
+    "vite": "⁵.4.0",
+    "vite-plugin-electron": "⁰.28.0",
+    "wait-on": "⁷.2.0"
+  },
+  "build": {
+    "appId": "com.yourname.electronreactvite",
+    "productName": "Electron React Vite App",
+    "files": [
+    "dist/**/*",
+    "electron/**/*"
+    ],
+    "mac": {
+    "category": "public.app-category.utilities"
+    },
+    "win": {
+    "target": "nsis"
+    },
+    "linux": {
+    "target": "AppImage"
+    }
+  }
+}
