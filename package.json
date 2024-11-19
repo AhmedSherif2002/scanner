@@ -14,20 +14,20 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "react": "¹⁸.3.1",
-    "react-dom": "¹⁸.3.1"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@types/react": "¹⁸.3.3",
-    "@types/react-dom": "¹⁸.3.0",
-    "@vitejs/plugin-react": "⁴.3.1",
-    "concurrently": "⁸.2.2",
-    "electron": "³¹.3.1",
-    "electron-builder": "²⁴.13.3",
-    "electron-is-dev": "³.0.1",
-    "vite": "⁵.4.0",
-    "vite-plugin-electron": "⁰.28.0",
-    "wait-on": "⁷.2.0"
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "@vitejs/plugin-react": "4.3.1",
+    "concurrently": "8.2.2",
+    "electron": "31.3.1",
+    "electron-builder": "24.13.3",
+    "electron-is-dev": "3.0.1",
+    "vite": "5.4.0",
+    "vite-plugin-electron": "0.28.0",
+    "wait-on": "7.2.0"
   },
   "build": {
     "appId": "com.yourname.electronreactvite",
@@ -38,7 +38,7 @@
     ],
     "mac": {
     "category": "public.app-category.utilities"
-    },
+    },          
     "win": {
     "target": "nsis"
     },
