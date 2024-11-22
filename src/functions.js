@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-let states = ["Initial","Number","String","Operator","AssignOp","Comment"];
+let states = ["Initial","Number","String","Operator","AssignOp","Comment","Error"];
 
 let preserved = {
     ";":"SEMICOLON",
@@ -39,13 +39,9 @@ let delimiters = [" ","\n","\r"];
 
 let token = "";
 let output = [];
+let errors = [];
 let currState = "Initial";
 let prevState = "Initial";
-
-const getType = (token) => {
-    if(isNaN(parseInt(token))) return "IDENTIFIER"
-    else return "NUMBER"
-}
 
 const sanitizeToken = (token, state)=>{
     if(state === "Comment") return;
@@ -76,8 +72,14 @@ const sanitizeToken = (token, state)=>{
     }
 }
 
+const handleError = (state, token, c)=>{
+    const error = token + c;
+    errors.push(error);
+}
+
 const scan = (filepath)=>{
     output = [];
+    errors = [];
     console.log(filepath)
     let code = fs.readFileSync(filepath.toString(),"utf8");
     console.log(code)
@@ -106,6 +108,11 @@ const scan = (filepath)=>{
                 currState = "Operator";
         }
         if(/[0-9]/.test(c)){
+            if(currState === "String"){
+                handleError(currState, token, c);
+                currState = "Error";
+                continue;
+            }
             currState = "Number";
         }
         if(c === ":"){
@@ -119,7 +126,7 @@ const scan = (filepath)=>{
         }
         prevState = currState;
     }
-    return output;
+    return { errors, tokens: output };
 }
 
 // for(token of output){

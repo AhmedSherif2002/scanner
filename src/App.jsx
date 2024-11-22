@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -7,6 +7,7 @@ import { scan } from './functions';
 function App() {
   const [file,setFile] = useState(null);
   const [output,setOutput] = useState([]);
+  const [errors,setErrors] = useState([]);
 
   const fileSelectHandle = (e)=>{
     console.log(e.target.files[0])
@@ -15,13 +16,23 @@ function App() {
   const scanHandle = (e)=>{
     console.log(file)
     console.log("scanning");
-    const tokens = scan(file.path);
+    const { errors, tokens} = scan(file.path);
+    console.log(errors, tokens);
+    if(errors.length !== 0){
+      setErrors(errors);
+      return;
+    }
+    setErrors([]);
     setOutput((prevTokens)=>{
       let newTokens = tokens;
       return newTokens;
     });
     console.log(tokens);
   }
+
+  // useEffect(()=>{
+  //   console.log(error)
+  // },[error])
 
   return (
     <>
@@ -32,7 +43,7 @@ function App() {
           <span className={`text-center ${file === null?"hidden":"visible"}`}>Selected file: <span className='text-green-600'>{file?.name}</span></span>
         </div>
         <button className='font-bold bg-gray-200 w-fit text-green-700 hover:bg-gray-100 duration-500 text-xl px-4 py-2 rounded-md' onClick={scanHandle}>Submit</button>
-        <div className='tokens-result w-1/3'>
+        <div className={`tokens-result w-1/3 ${errors.length !== 0 || output.length === 0?"hidden":"visible"}`}>
           <div className='flex flex-row font-semibold bg-green-700 text-white'>
             <div className='w-1/2 p-2 '>Value</div>
             <div className='w-1/2 p-2 '>Type</div>
@@ -40,15 +51,21 @@ function App() {
           <div className='overflow-auto' style={{maxHeight:"400px"}}>
             {
               output.map((output,index)=>(
-                <>
-                  <div className='flex flex-row font-semibold bg-gray-100 border-b-2'>
-                    <div className='w-1/2 p-2 '>{output.value}</div>
-                    <div className='w-1/2 p-2 '>{output.type}</div>
-                  </div>
-                </>
+                <div key={index} className='flex flex-row font-semibold bg-gray-100 border-b-2'>
+                  <div className='w-1/2 p-2 '>{output.value}</div>
+                  <div className='w-1/2 p-2 '>{output.type}</div>
+                </div>
               ))
             }
           </div>
+        </div>
+        <div className={`error ${errors.length === 0?"hidden":"visible"} bg-red-400 w-1/3 rounded-lg p-2 text-white`}>
+          <div className='font-semibold'>Error:</div>
+          {
+            errors.map((error,index)=>(
+              <p key={index} className=''>Unexpected Token: <span className='font-semibold'>{error}</span></p>
+            ))
+          }
         </div>
         <button onClick={()=>window.location.reload()} className={`${file === null?"hidden":"visible"} bg-green-400 px-4 py-2 text-2xl font-semibold text-white rounded-lg`}>&#10227;</button>
       </div>
