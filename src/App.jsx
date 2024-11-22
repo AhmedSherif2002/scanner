@@ -63,7 +63,7 @@ function App() {
           <div className='font-semibold'>Error:</div>
           {
             errors.map((error,index)=>(
-              <p key={index} className=''>Unexpected Token: <span className='font-semibold'>{error}</span></p>
+              <p key={index} className=''>{error.type}<span className='font-semibold'>{error.string}</span></p>
             ))
           }
         </div>

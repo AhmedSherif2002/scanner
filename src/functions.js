@@ -35,15 +35,16 @@ let code = `
 `
 
 // let delimiters = [" ",";","\n"];
-let delimiters = [" ","\n","\r"];
+let delimiters = [" ","\n","\r","\t"];
 
 let token = "";
 let output = [];
 let errors = [];
+let stack = [];
 let currState = "Initial";
 let prevState = "Initial";
 
-const sanitizeToken = (token, state)=>{
+const parseToken = (token, state)=>{
     if(state === "Comment") return;
     if(state === "String"){
         const type = preserved[token]?preserved[token]:"IDENTIFIER";
@@ -72,14 +73,69 @@ const sanitizeToken = (token, state)=>{
     }
 }
 
-const handleError = (state, token, c)=>{
-    const error = token + c;
-    errors.push(error);
+const errorCheck = (currState, c, token)=>{
+    if(currState === "String" && (/[0-9]/.test(c))){
+        handleError(currState, token, c, "Unexpected Token: ")
+        currState = "Error";
+        return true;
+    }
+    if(currState === "Number" && (/[a-zA-Z]/.test(c))){
+        handleError(currState, token, c, "Unexpected Token: ");
+        currState = "Error";
+        return true;
+    }
+    if(currState === "Operator" && ("=+-*/;<".includes(c)) && token.endsWith(c)){
+        handleError(currState, token, c, "Unexpected Token: ");
+        currState = "Error";
+        return true;
+    }
+    if(currState === "AssignOp"){
+        if((token === ":=" && c === "=") || (token === ":" && c !== "=")){
+            handleError(currState, token, c, "Unexpected Token: ");
+            currState = "Error";
+            return true;
+        }
+    }
+    if(c === ")"){
+        console.log("stack", stack)
+        if(stack.at(-1) !== "("){
+            handleError(currState, token, c, "Open Bracket Missing: ");
+            currState = "Error";
+            return true;
+        }else{
+            stack.pop()
+            console.log("stack", stack)
+        }
+    }
+    if(c === "}"){
+        console.log("stack", stack)
+        if(stack.at(-1) !== "{"){
+            handleError(currState, token, c, "Open Bracket Missing: ");
+            currState = "Error";
+            return true;
+        }else{
+            stack.pop();
+            console.log("stack", stack);
+        }
+    }
+    return false;
+}
+
+const handleError = (state, token, c, type)=>{
+    const string = token + c;
+    errors.push({
+        type,
+        string
+    });
 }
 
 const scan = (filepath)=>{
     output = [];
     errors = [];
+    stack = [];
+    currState = "Initial"
+    prevState = "Initial"
+    token = "";
     console.log(filepath)
     let code = fs.readFileSync(filepath.toString(),"utf8");
     console.log(code)
@@ -94,37 +150,57 @@ const scan = (filepath)=>{
         }
         if(c === "{"){
             currState = "Comment";
+            stack.push("{");
         }
         if(delimiters.includes(c)){
             currState = "Initial"
         }
+        if(errorCheck(currState, c, token)){
+            continue;
+        }
         if(/[a-zA-Z]/.test(c)){
             currState = "String";
         }
-        if("=+-*/();<".includes(c)){
+        else if("=+-*/();<".includes(c)){
             if(c === "=" && currState === "AssignOp"){
                 currState = "AssignOp"
-            }else 
+            }else{
                 currState = "Operator";
+                if(c === "(") stack.push("(");
+                if("()".includes(c)){
+                    if("()".includes(token) || prevState === "Operator"){
+                        parseToken(token, prevState);
+                        token = c;
+                        continue
+                    }
+                }else if(prevState === "Operator" && token !== ")"){
+                    handleError(currState, token, c, "Unexpected Token: ");
+                }
+            } 
         }
-        if(/[0-9]/.test(c)){
-            if(currState === "String"){
-                handleError(currState, token, c);
-                currState = "Error";
-                continue;
-            }
+        else if(/[0-9]/.test(c)){
             currState = "Number";
         }
-        if(c === ":"){
+        else if(c === ":"){
             currState = "AssignOp"
+        }else if(!delimiters.includes(c) && c !== "{" && c !== "}"){ // unknown token
+            handleError(currState, "", c, "Unknown Token: ")
         }
         if(prevState !== currState){
-            sanitizeToken(token, prevState);
+            parseToken(token, prevState);
             token = c;
         }else{
             token += c;
         }
         prevState = currState;
+    }
+    if(stack.length !== 0){
+        for(let bracket of stack){
+            errors.push({
+                type: "Bracket Not Closed: ",
+                string: bracket
+            });
+        }
     }
     return { errors, tokens: output };
 }
