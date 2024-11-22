@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-let states = ["Initial","Number","String","Operator","AssignOp"];
+let states = ["Initial","Number","String","Operator","AssignOp","Comment"];
 
 let preserved = {
     ";":"SEMICOLON",
@@ -48,6 +48,7 @@ const getType = (token) => {
 }
 
 const sanitizeToken = (token, state)=>{
+    if(state === "Comment") return;
     if(state === "String"){
         const type = preserved[token]?preserved[token]:"IDENTIFIER";
         output.push({
@@ -82,7 +83,15 @@ const scan = (filepath)=>{
     code += "\n";
     for(let c of code){
         console.log(c);
-        // console.log(c,/[a-zA-Z]/.test(c))
+        if(currState === "Comment"){
+            if(c !== "}") continue
+            else{
+                currState = "Initial";
+            }
+        }
+        if(c === "{"){
+            currState = "Comment";
+        }
         if(delimiters.includes(c)){
             currState = "Initial"
         }
