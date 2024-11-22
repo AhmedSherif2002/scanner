@@ -16,7 +16,10 @@ function App() {
     console.log(file)
     console.log("scanning");
     const tokens = scan(file.path);
-    setOutput(tokens);
+    setOutput((prevTokens)=>{
+      let newTokens = tokens;
+      return newTokens;
+    });
     console.log(tokens);
   }
 
@@ -36,7 +39,7 @@ function App() {
           </div>
           <div className='overflow-auto' style={{maxHeight:"400px"}}>
             {
-              output.map(output=>(
+              output.map((output,index)=>(
                 <>
                   <div className='flex flex-row font-semibold bg-gray-100 border-b-2'>
                     <div className='w-1/2 p-2 '>{output.value}</div>
@@ -47,6 +50,7 @@ function App() {
             }
           </div>
         </div>
+        <button onClick={()=>window.location.reload()} className={`${file === null?"hidden":"visible"} bg-green-400 px-4 py-2 text-2xl font-semibold text-white rounded-lg`}>&#10227;</button>
       </div>
     </>
   )

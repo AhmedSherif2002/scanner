@@ -77,6 +77,7 @@ const sanitizeToken = (token, state)=>{
 }
 
 const scan = (filepath)=>{
+    output = [];
     console.log(filepath)
     let code = fs.readFileSync(filepath.toString(),"utf8");
     console.log(code)
