@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from "fs";
 
 let states = ["Initial","Number","String","Operator","AssignOp","Comment","Error"];
 
@@ -129,15 +129,15 @@ const handleError = (state, token, c, type)=>{
     });
 }
 
-const scan = (filepath)=>{
+const scan = (code)=>{
     output = [];
     errors = [];
     stack = [];
     currState = "Initial"
     prevState = "Initial"
     token = "";
-    console.log(filepath)
-    let code = fs.readFileSync(filepath.toString(),"utf8");
+    // console.log(filepath)
+    // let code = fs.readFileSync(filepath.toString(),"utf8");
     console.log(code)
     code += "\n";
     for(let c of code){

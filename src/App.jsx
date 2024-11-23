@@ -16,23 +16,37 @@ function App() {
   const scanHandle = (e)=>{
     console.log(file)
     console.log("scanning");
-    const { errors, tokens} = scan(file.path);
-    console.log(errors, tokens);
-    if(errors.length !== 0){
-      setErrors(errors);
-      return;
-    }
-    setErrors([]);
-    setOutput((prevTokens)=>{
-      let newTokens = tokens;
-      return newTokens;
+    window.api.send("toMain", file.path);
+    let code = "";
+    window.api.receive("fromMain", (code) => {
+      console.log(`Received ${code} from main process`);
+      // code = data;
+      console.log("c", code)
+      const { errors, tokens} = scan(code);
+      console.log(errors, tokens);
+      if(errors.length !== 0){
+        setErrors(errors);
+        return;
+      }
+      setErrors([]);
+      setOutput((prevTokens)=>{
+        let newTokens = tokens;
+        return newTokens;
+      });
+      console.log(tokens);
     });
-    console.log(tokens);
   }
 
-  // useEffect(()=>{
-  //   console.log(error)
-  // },[error])
+  useEffect(()=>{
+    // Called when message received from main process
+      window.api.receive("fromMain", (data) => {
+        console.log(`Received ${data} from main process`);
+      });
+
+    // Send a message to the main process
+    // window.api.send("toMain", 1);
+    console.log(window.api)
+  },[])
 
   return (
     <>
