@@ -1,9 +1,10 @@
+import match from "./match";
 // addOp --> + | -
-function addOp(output, indexObj) {
+function addOp(output, index) {
   try {
     // match(+) OR match (-)
-    if (output[indexObj.index]?.type === "PLUS") indexObj.index++;
-    else if (output[indexObj.index]?.type === "MINUS") indexObj.index++;
+    if (output[index]?.type === "PLUS") index++;
+    else if (output[index]?.type === "MINUS") index++;
     else throw new Error("Missing PLUS or MINUS token in addOp");
   } catch (error) {
     throw error;

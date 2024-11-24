@@ -1,14 +1,15 @@
+import match from "./match";
 //assign-stmt --> IDENTIFIER := exp
-function assignStmt(output, indexObj) {
+function assignStmt(output, index) {
   try {
     // match(IDENTIFIER)
-    if (output[indexObj.index]?.type === "IDENTIFIER") indexObj.index++;
+    if (output[index]?.type === "IDENTIFIER") index++;
     else throw new Error("Missing IDENTIFIER token in assignStmt");
     // match(:=)
-    if (output[indexObj.index]?.type === "ASSIGN") indexObj.index++;
+    if (output[index]?.type === "ASSIGN") index++;
     else throw new Error("Missing ASSIGN token in assignStmt");
     // match (exp)
-    exp(output, indexObj);
+    exp(output, index);
   } catch (error) {
     throw error;
   }

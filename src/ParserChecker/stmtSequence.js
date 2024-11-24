@@ -1,17 +1,18 @@
+import match from "./match";
 // stmt-Sequence -> statement {;statement}
-function StmtSequence(output, indexObj) {
+function StmtSequence(output, index) {
   try {
     // match(statement)
-    statement(output, indexObj);
-    while (output.length > indexObj.index) {
+    statement(output, index);
+    while (output.length > index) {
       // match (;)
-      if (output[indexObj.index]?.type === "SEMICOLON") {
-        indexObj.index++;
+      if (output[index]?.type === "SEMICOLON") {
+        index++;
       } else {
         throw new Error("There is a SEMICOLON Missing in stmtSequence");
       }
       // match(statement)
-      statement(output, indexObj);
+      statement(output, index);
     }
   } catch (error) {
     throw error;
