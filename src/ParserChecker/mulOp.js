@@ -1,14 +1,11 @@
 import match from "./match";
 //mulOp --> * | /
 function mulOp(output, index) {
-  try {
-    // match(*) OR match (/)
-    if (output[index]?.type === "MULT") index++;
-    else if (output[index]?.type === "DIV") index++;
-    else throw new Error("Missing MULT or DIV token in mulOp");
-  } catch (error) {
-    throw error;
-  }
+  // match(*) OR match (/)
+  if (output[indexObj.index]?.type === "MULT")
+    match(output, indexObj, "MULT", "Missing MULT token in mulOp");
+  else if (output[indexObj.index]?.type === "DIV")
+    match(output, indexObj, "DIV", "Missing DIV token in mulOp");
 }
 
 export default mulOp;

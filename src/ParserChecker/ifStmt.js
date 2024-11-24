@@ -1,43 +1,30 @@
-import StmtSequence from "./StmtSequence";
+import stmtSequence from "./StmtSequence";
+import exp from "./exp";
 import match from "./match";
 // ifStmt -> if exp then stmt-sequence [else stmt-sequence] end
-function ifStmt(output, index) {
-  try {
-    // match(IF)
-    if (output[index]?.type === "IF") {
-      index++;
-    } else {
-      throw new Error("Missing IF token in ifStmt");
-    }
+function ifStmt(output, indexObj) {
+  // match(IF)
 
-    // match(exp)
-    exp(output, index);
+  match(output, indexObj, "IF", "Missing IF token in ifStmt");
 
-    //match(THEN)
-    if (output[index]?.type === "THEN") {
-      index++;
-    } else {
-      throw new Error("Missing THEN token in ifStmt");
-    }
+  // match(exp)
+  exp(output, indexObj);
 
-    //match(stmtSequence)
-    StmtSequence(output, index);
+  //match(THEN)
+  match(output, indexObj, "THEN", "Missing THEN token in ifStmt");
 
-    // match(ELSE) (OPTIONAL)
-    if (output[index]?.type === "ELSE") {
-      index++;
-      // match(stmtSequence)
-      StmtSequence(output, index);
-    }
+  //match(stmtSequence)
+  stmtSequence(output, indexObj);
 
-    // match(END)
-    if (output[index]?.type === "END") index++;
-    else {
-      throw new Error("Missing END token in ifStmt");
-    }
-  } catch (error) {
-    throw error;
+  // match(ELSE) (OPTIONAL)
+  if (output[indexObj.index]?.type === "ELSE") {
+    match(output, indexObj, "ELSE", "Missing ELSE token in ifStmt");
+    // match(stmtSequence)
+    stmtSequence(output, indexObj);
   }
+
+  // match(END)
+  match(output, indexObj, "END", "Missing END token in ifStmt");
 }
 
 export default ifStmt;

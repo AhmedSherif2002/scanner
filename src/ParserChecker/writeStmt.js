@@ -1,16 +1,12 @@
 import match from "./match";
+import exp from "./exp";
 // writeStmt --> write exp
-function writeStmt(output, index) {
-  try {
-    // match(write)
-    if (output[index]?.type === "WRITE") index++;
-    else throw new Error("Missing WRITE token in writeStmt");
+function writeStmt(output, indexObj) {
+  // match(write)
+  match(output, indexObj, "WRITE", "Missing WRITE token in writeStmt");
 
-    // match (exp)
-    exp(output, index);
-  } catch (error) {
-    throw error;
-  }
+  // match (exp)
+  exp(output, indexObj);
 }
 
 export default writeStmt;

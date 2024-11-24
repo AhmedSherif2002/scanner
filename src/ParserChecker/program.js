@@ -1,10 +1,13 @@
-let index = 0;
-let program = (output, index) => {
+import stmtSequence from "./StmtSequence";
+
+let program = (output, indexObj) => {
   try {
-    stmtSequence(output, index);
+    stmtSequence(output, indexObj);
+    if (indexObj.index < output.length) throw new Error("invalid parsing");
+    indexObj.index = 0;
     return "success";
   } catch (e) {
-    return "error";
+    return e.message;
   }
 };
 export default program;

@@ -1,18 +1,20 @@
 import match from "./match";
+import exp from "./exp";
 //assign-stmt --> IDENTIFIER := exp
-function assignStmt(output, index) {
-  try {
-    // match(IDENTIFIER)
-    if (output[index]?.type === "IDENTIFIER") index++;
-    else throw new Error("Missing IDENTIFIER token in assignStmt");
-    // match(:=)
-    if (output[index]?.type === "ASSIGN") index++;
-    else throw new Error("Missing ASSIGN token in assignStmt");
-    // match (exp)
-    exp(output, index);
-  } catch (error) {
-    throw error;
-  }
+function assignStmt(output, indexObj) {
+  // match(IDENTIFIER)
+
+  match(
+    output,
+    indexObj,
+    "IDENTIFIER",
+    "Missing IDENTIFIER token in assignStmt"
+  );
+  // match(:=)
+
+  match(output, indexObj, "ASSIGN", "Missing ASSIGN token in assignStmt");
+  // match (exp)
+  exp(output, indexObj);
 }
 
 export default assignStmt;

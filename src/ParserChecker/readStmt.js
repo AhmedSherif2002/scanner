@@ -1,7 +1,7 @@
 import match from "./match";
-function readStmt(output, index) {
-  match(output, index, "READ");
-  match(output, index, "IDENTIFIER");
+function readStmt(output, indexObj) {
+  match(output, indexObj, "READ", "missing READ token in readStmt");
+  match(output, indexObj, "IDENTIFIER", "missing IDENTIFIER token in readStmt");
 }
 
 export default readStmt;

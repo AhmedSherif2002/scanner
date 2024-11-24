@@ -29,7 +29,9 @@ function createWindow() {
       // use a preload script
     }
   });
-  win.loadURL(isDev ? "http://localhost:5173" : `file://${path.join(__dirname$1, "../dist/index.html")}`);
+  win.loadURL(
+    isDev ? "http://localhost:5173" : `file://${path.join(__dirname$1, "../dist/index.html")}`
+  );
   if (isDev) {
     win.webContents.openDevTools();
   }
@@ -47,8 +49,6 @@ electron.app.on("activate", () => {
 });
 electron.ipcMain.on("toMain", (event, args) => {
   fs.readFile(args, (error, data) => {
-    console.log(args);
-    console.log(data.toString());
     win.webContents.send("fromMain", data.toString());
   });
 });

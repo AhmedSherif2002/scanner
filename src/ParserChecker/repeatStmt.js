@@ -1,9 +1,10 @@
-import StmtSequence from "./stmtSequence";
+import exp from "./exp";
 import match from "./match";
-function repeatStmt(output, index) {
-  match(output, index, "REPEAT");
-  StmtSequence(output, index);
-  match(output, index, "UNTIL");
-  exp(output, index);
+import stmtSequence from "./StmtSequence";
+function repeatStmt(output, indexObj) {
+  match(output, indexObj, "REPEAT", "missing REPEAT token in repeatStmt");
+  stmtSequence(output, indexObj);
+  match(output, indexObj, "UNTIL", "missing UNTIL token in repeatStmt");
+  exp(output, indexObj);
 }
 export default repeatStmt;
