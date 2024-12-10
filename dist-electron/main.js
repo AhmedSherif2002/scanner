@@ -1,1 +1,54 @@
-"use strict";const e=require("electron"),t=require("path"),d=require("url"),p=require("fs");var o=typeof document<"u"?document.currentScript:null;if(typeof e=="string")throw new TypeError("Not running in an Electron environment!");const{env:c}=process,u="ELECTRON_IS_DEV"in c,f=Number.parseInt(c.ELECTRON_IS_DEV,10)===1,s=u?f:!e.app.isPackaged,w=d.fileURLToPath(typeof document>"u"?require("url").pathToFileURL(__filename).href:o&&o.tagName.toUpperCase()==="SCRIPT"&&o.src||new URL("main.js",document.baseURI).href),a=t.dirname(w);let n;function l(){n=new e.BrowserWindow({width:800,height:600,webPreferences:{nodeIntegration:!1,contextIsolation:!0,enableRemoteModule:!1,preload:t.join(a,"preload.js")}}),n.loadURL(s?"http://localhost:5173":`file://${t.join(a,"../dist/index.html")}`),s&&n.webContents.openDevTools()}e.app.whenReady().then(l);e.app.on("window-all-closed",()=>{process.platform!=="darwin"&&e.app.quit()});e.app.on("activate",()=>{e.BrowserWindow.getAllWindows().length===0&&l()});e.ipcMain.on("toMain",(m,r)=>{p.readFile(r,(h,i)=>{console.log(r),console.log(i.toString()),n.webContents.send("fromMain",i.toString())})});
+"use strict";
+const electron = require("electron");
+const path = require("path");
+const url = require("url");
+const fs = require("fs");
+var _documentCurrentScript = typeof document !== "undefined" ? document.currentScript : null;
+if (typeof electron === "string") {
+  throw new TypeError("Not running in an Electron environment!");
+}
+const { env } = process;
+const isEnvSet = "ELECTRON_IS_DEV" in env;
+const getFromEnv = Number.parseInt(env.ELECTRON_IS_DEV, 10) === 1;
+const isDev = isEnvSet ? getFromEnv : !electron.app.isPackaged;
+const __filename$1 = url.fileURLToPath(typeof document === "undefined" ? require("url").pathToFileURL(__filename).href : _documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === "SCRIPT" && _documentCurrentScript.src || new URL("main.js", document.baseURI).href);
+const __dirname$1 = path.dirname(__filename$1);
+let win;
+function createWindow() {
+  win = new electron.BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: false,
+      // is default value after Electron v5
+      contextIsolation: true,
+      // protect against prototype pollution
+      enableRemoteModule: false,
+      // turn off remote
+      preload: path.join(__dirname$1, "preload.js")
+      // use a preload script
+    }
+  });
+  win.loadURL(
+    isDev ? "http://localhost:5173" : `file://${path.join(__dirname$1, "../dist/index.html")}`
+  );
+  if (isDev) {
+    win.webContents.openDevTools();
+  }
+}
+electron.app.whenReady().then(createWindow);
+electron.app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    electron.app.quit();
+  }
+});
+electron.app.on("activate", () => {
+  if (electron.BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
+electron.ipcMain.on("toMain", (event, args) => {
+  fs.readFile(args, (error, data) => {
+    win.webContents.send("fromMain", data.toString());
+  });
+});
