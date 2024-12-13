@@ -10,3 +10,13 @@
     width: 5px;
     background-color: rgb(35, 188, 35);
 }
+
+html, body {
+    height: 100%;      /* Ensure both the root and body have full height */
+    margin: 0;         /* Remove default margin */
+    padding: 0;        /* Remove default padding */
+  }
+  
+  #root {
+    height: 100%;      /* Ensure the React root element also takes full height */
+  }

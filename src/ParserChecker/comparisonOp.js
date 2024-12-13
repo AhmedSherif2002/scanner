@@ -10,7 +10,7 @@ function comparisonOp(output, indexObj) {
       "Missing LESSTHAN token in comparisonOp"
     );
   else if (output[indexObj.index]?.type === "EQUAL")
-    match(output, indexObj, "LESSTHAN", "Missing EQUAL token in comparisonOp");
+    match(output, indexObj, "EQUAL", "Missing EQUAL token in comparisonOp");
 }
 
 export default comparisonOp;
