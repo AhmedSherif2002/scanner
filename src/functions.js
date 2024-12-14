@@ -175,10 +175,11 @@ const scan = (code) => {
       } else {
         currState = "Operator";
         if (c === "(") stack.push("(");
-        if ("()".includes(c)) {
+        if ("();".includes(c)) {
           if ("()".includes(token) || prevState === "Operator") {
             parseToken(token, prevState);
             token = c;
+
             continue;
           }
         } else if (prevState === "Operator" && token !== ")") {

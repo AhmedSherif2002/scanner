@@ -142,7 +142,7 @@ export default class Tree{
             this.canvasWidth = x + 150;
         }
         if(y >= this.canvas.height){
-            this.canvas.setHeight(y+ 100);
+            this.canvas.setHeight(y + 100);
         }
         console.log("canavs width:", this.canvas.width)
     }
