@@ -10,13 +10,14 @@ function factor(output, indexObj) {
       "OPENBRACKET",
       "missing OPENBRACKET token in factor"
     );
-    exp(output, indexObj);
+    const node = exp(output, indexObj);
     match(
       output,
       indexObj,
       "CLOSEBRACKET",
       "missing CLOSEBRACKET token in factor"
     );
+    return node;
   } else if (output[indexObj.index]?.type === "IDENTIFIER") {
     const id = match(output, indexObj, "IDENTIFIER", "Missing IDENTIFIER token in factor");
     const node = new Node(`id(${id})`)

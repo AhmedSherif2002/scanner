@@ -7,6 +7,11 @@ function match(output, indexObj, matcher, message) {
   console.log(indexObj.index, matcher, output[indexObj.index].type);
   if (output[indexObj.index]?.type === matcher) {
     indexObj.index++;
+    if(matcher === "OPENBRACKET" || matcher === "CLOSEBRACKET") {
+      console.log("bracket")
+      return;
+      // throw("errrrrrr")
+    }
     if(special.includes(matcher)){
       console.log("Value is returned", output[indexObj.index-1].value)
       return output[indexObj.index-1].value;

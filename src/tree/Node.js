@@ -23,7 +23,7 @@ export default class Node {
 
     setShape(value){
         if(value.includes("op(") || value.includes("id(") || value.includes("const(")){
-            console.log(true)
+            // console.log(true)
             this.shape = "oval" 
         }else this.shape = "rect"
     }
@@ -87,16 +87,16 @@ export default class Node {
         canvas.add(text);
 
         // connect with children
-        for(let child of this.children){
-            const line = this.connectChild(child);
-            console.log(line);
-            canvas.add(line);
-        }
+        // for(let child of this.children){
+        //     const line = this.connectChild(child);
+        //     // console.log(line);
+        //     canvas.add(line);
+        // }
 
         // Connect with sibling
         if(this.leftSibling){
             const line = this.connectSibling();
-            console.log(line)
+            // console.log(line)
             canvas.add(line)
         } 
     }
@@ -151,7 +151,7 @@ export default class Node {
         const y1 = this.leftSibling.coords.y + this.rect.height / 2;
         
         // Current node coords where line goes into
-        console.log(this, "left sibling:",this.leftSibling) 
+        // console.log(this, "left sibling:",this.leftSibling) 
         const x2 = this.coords.x;
         const y2 = this.coords.y + this.rect.height / 2;
 

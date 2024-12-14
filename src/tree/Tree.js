@@ -5,12 +5,16 @@ export default class Tree{
     head = null
     levels = []
     canvas;
-    gap = 50;
+    gap = 70;
     shift = this.gap
     height = 0;
     topMargin = 100;
+    leftMargin = 250;
     canvasHeight = 0;
     canvasWidth = 0;
+    degree = 70;
+    windowWidth = 0;
+    windowHeight = 0;
 
     rect = {
         width: 100,
@@ -32,13 +36,13 @@ export default class Tree{
 
     print(){
         this.traverse(this.head, 0);
-        console.log(this.levels);
+        // console.log(this.levels);
     }
 
     visitAll(){
-        this.traverse(this.head, 0);
+        // this.traverse(this.head, 0);
         console.log(this.levels);
-        this.height = this.levels.length * 100;
+        // this.height = this.levels.length * 100;
     }
 
     traverse(node, level){
@@ -47,7 +51,7 @@ export default class Tree{
             this.levels[level].push(node)
         } 
         else this.levels[level].push(node)
-        console.log("node:", node.value, level);
+        // console.log("node:", node.value, level);
         const children = node.getChildren();
         for(let child of children){
             this.traverse(child, level + 1);
@@ -56,6 +60,91 @@ export default class Tree{
             const sibling = node.getSibling();
             this.traverse(sibling, level);
         }
+    }
+
+    traverseTree(node, level){
+        // insert a new level array
+        if(!this.levels[level]){
+            this.levels[level] = [];
+        }
+        if(!this.levels[level+1]){
+            this.levels[level+1] = [];
+        }
+        // assign level to the node
+        node.level = level
+
+        console.log("node:", node.value, level);
+        // Start drawing the node
+        // this.drawNode(node);
+        if(node === this.head){
+            const x = this.leftMargin  // x = margin
+            const y = this.topMargin // y = margin + 100*level
+            this.drawNode(node, x, y);
+        }
+        
+        const children = node.getChildren();
+        for(let i = 0;i<children.length;i++){
+            const child = children[i];
+            child.level = level + 1
+            // const x = node.coords.x;
+            let x = node.coords.x + ((i === 0)?-1*this.gap * Math.tan(this.degree*Math.PI/180):(i === 1)?0:this.gap * Math.tan(this.degree*Math.PI/180));
+            const y = this.topMargin + (this.rect.height+this.gap)*(level+1);
+            if(!this.areCoordsValid(x, level+1))
+                x = this.levels[level+1][this.levels[level+1].length-1].coords.x + this.rect.width + this.gap;
+                
+            this.drawNode(child, x, y);
+            const line = node.connectChild(child);
+            this.canvas.add(line);
+            this.traverseTree(child, level + 1);
+            console.log("child",child)
+            
+        }
+        if(node.hasSibling()){
+            const sibling = node.getSibling();
+            sibling.level = level
+            const x = node.coords.x + this.rect.width + this.gap;
+            const y = this.topMargin + (this.rect.height+this.gap)*level;
+            console.log("sibling", sibling)
+            this.drawNode(sibling, x, y);
+            this.traverseTree(sibling, level);
+        }
+    }
+
+    areCoordsValid(x, level){
+        if(this.levels[level].length === 0) return true
+        const behindNode = this.levels[level][this.levels[level].length-1];
+        console.log("Behind node:",behindNode, this.levels[level], level, this.levels)
+        if(behindNode.coords.x + this.rect.width >= x){
+            return false;
+        }
+        return true;
+    }
+
+    // drawNode(node){
+    //     const levelSize = this.levels[node.level].length; // number of nodes in this level
+    //     const x = this.leftMargin + levelSize * (this.rect.width + this.gap);  // x = margin + 150*levelSize
+    //     const y = this.topMargin + node.level * (this.rect.height + this.gap); // y = margin + 100*level
+    //     node.draw(this.canvas, x, y);
+    //     // Add node to its level        
+    //     this.levels[node.level].push(node)
+    // }
+
+    drawNode(node, x, y){
+        node.draw(this.canvas, x, y);
+        // Add node to its level        
+        this.levels[node.level].push(node);
+
+        // check if canvas size wants to be extended
+        console.log("windowWidth", this.windowWidth)
+        if(x >= this.canvas.width){
+            console.log("truuuuuuuueeeeeee")
+            this.canvas.setWidth(x + 150);
+            this.canvasWidth = x + 150;
+        }
+        if(y >= this.canvas.height){
+            this.canvas.setHeight(y+ 100);
+        }
+        console.log("canavs width:", this.canvas.width)
     }
 
     traverseLevels(level){
@@ -67,10 +156,10 @@ export default class Tree{
         const margin = (this.canvasWidth - required) / 2; // margin at which drawing will start
         for(let i=0;i<this.levels[level].length;i++){
             const node = this.levels[level][i];
-            console.log(node)
-            const x = margin + 150 * i;
+            // console.log(node)
+            // const x = margin + 150 * i;
             // const x = margin + 150 * i + (level % 2 === 0)?this.shift*(-1):this.shift;
-            // const x = margin + 150 * i + ((level % 2 === 0)?this.shift*(-1):this.shift);
+            const x = margin + 150 * i + ((level % 2 === 0)?this.shift*(-1):this.shift);
             const y = this.topMargin + 120 * level
             node.draw(this.canvas, x, y);
         }
@@ -78,11 +167,14 @@ export default class Tree{
     }
 
     draw(canvas){
-        this.canvas = canvas
-        this.canvasWidth = canvas.width;
-        this.canvasHeight = canvas.height;
-        this.traverseLevels(this.levels.length-1);
-        // console.log(this.levels)
+        this.canvas = canvas;
+        this.canvasWidth = this.canvas.width;
+        this.canvasHeight = this.canvas.height;
+        this.windowWidth = this.canvas.width;
+        this.windowHeight = this.canvas.height
+        this.traverseTree(this.head, 0);
+        // this.traverseLevels(this.levels.length-1);
+        console.log(this.levels)
         // const rect = new window.fabric.Rect({
         //     left: 100,
         //     top: 100,
