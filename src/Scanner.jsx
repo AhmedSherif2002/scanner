@@ -17,6 +17,7 @@ function Scanner() {
 
   const handleSelectText = () => {
     setUseText((useText) => !useText);
+    setTextInput("");
   };
 
   const handleTextInput = (e) => {
@@ -30,14 +31,9 @@ function Scanner() {
   const scanHandle = (e) => {
     // console.log(file);
     // console.log("scanning");
-    window.api.send("toMain", file.path);
-    let code = "";
-    window.api.receive("fromMain", (code) => {
-      // console.log(`Received ${code} from main process`);
-      // code = data;
-      // console.log("c", code);
+    if (useText) {
+      let code = useText;
       const { errors, tokens } = scan(code);
-      // console.log(errors, tokens);
       if (errors.length !== 0) {
         setErrors(errors);
         return;
@@ -47,16 +43,35 @@ function Scanner() {
         let newTokens = tokens;
         return newTokens;
       });
+    } else {
+      window.api.send("toMain", file.path);
+      let code = "";
+      window.api.receive("fromMain", (code) => {
+        // console.log(`Received ${code} from main process`);
+        // code = data;
+        // console.log("c", code);
+        const { errors, tokens } = scan(code);
+        // console.log(errors, tokens);
+        if (errors.length !== 0) {
+          setErrors(errors);
+          return;
+        }
+        setErrors([]);
+        setOutput((prevTokens) => {
+          let newTokens = tokens;
+          return newTokens;
+        });
 
-      // const head = program(tokens, { index: 0 });
-      // console.log(head);
-      // const tree = new Tree(head);
-      // setTree(tree);
-      // console.log(tree);
-      // tree.print()
+        // const head = program(tokens, { index: 0 });
+        // console.log(head);
+        // const tree = new Tree(head);
+        // setTree(tree);
+        // console.log(tree);
+        // tree.print()
 
-      // console.log(tokens);
-    });
+        // console.log(tokens);
+      });
+    }
   };
 
   useEffect(() => {
