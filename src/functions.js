@@ -211,8 +211,9 @@ const scan = (code) => {
     }
   }
   //   console.log(output);
-  console.log(program(output, { index: 0 }));
-  return { errors, tokens: output };
+  // console.log(program(output, { index: 0 }));
+  const parsingAvailable = program(output, { index: 0 });
+  return { errors, tokens: output, parsingAvailable };
 };
 
 // for(token of output){

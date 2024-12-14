@@ -14,6 +14,7 @@ function Scanner() {
   const [output, setOutput] = useState([]);
   const [errors, setErrors] = useState([]);
   const [tree, setTree] = useState("tree");
+  const [errorParsing, setErrorParsing] = useState("");
 
   const handleSelectText = () => {
     setUseText((useText) => !useText);
@@ -33,7 +34,9 @@ function Scanner() {
     // console.log("scanning");
     if (useText) {
       let code = textInput;
-      const { errors, tokens } = scan(code);
+      const { errors, tokens, parsingAvailable } = scan(code);
+      setErrorParsing(parsingAvailable);
+
       if (errors.length !== 0) {
         setErrors(errors);
         return;
@@ -50,7 +53,8 @@ function Scanner() {
         // console.log(`Received ${code} from main process`);
         // code = data;
         // console.log("c", code);
-        const { errors, tokens } = scan(code);
+        const { errors, tokens, parsingAvailable } = scan(code);
+        setErrorParsing(parsingAvailable);
         // console.log(errors, tokens);
         if (errors.length !== 0) {
           setErrors(errors);
@@ -180,15 +184,25 @@ function Scanner() {
         >
           &#10227;
         </button>
-        <Link
-          className={`${
-            output.length === 0 ? "hidden" : ""
-          } bg-slate-300 p-2 rounded-md font-semibold text-xl`}
-          to={"/parser"}
-          state={{ output: output }}
-        >
-          Parse
-        </Link>
+        {errorParsing == "success" ? (
+          <Link
+            className={`${
+              output.length === 0 ? "hidden" : ""
+            } bg-slate-300 p-2 rounded-md font-semibold text-xl`}
+            to={"/parser"}
+            state={{ output: output }}
+          >
+            Parse
+          </Link>
+        ) : (
+          <span
+            className={`error ${
+              errorParsing != "success" ? "visible" : "hidden"
+            } bg-red-400 w-1/3 rounded-lg p-2 text-white`}
+          >
+            {errorParsing}
+          </span>
+        )}
       </div>
     </>
   );
