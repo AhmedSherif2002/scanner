@@ -32,7 +32,7 @@ function Scanner() {
     // console.log(file);
     // console.log("scanning");
     if (useText) {
-      let code = useText;
+      let code = textInput;
       const { errors, tokens } = scan(code);
       if (errors.length !== 0) {
         setErrors(errors);
