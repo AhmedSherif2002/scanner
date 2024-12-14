@@ -4,6 +4,24 @@ import program from "./program";
 export default class Tree{
     head = null
     levels = []
+    canvas;
+    gap = 50;
+    shift = this.gap
+    height = 0;
+    topMargin = 100;
+    canvasHeight = 0;
+    canvasWidth = 0;
+
+    rect = {
+        width: 100,
+        height: 50,
+    }
+
+    oval = {
+        rx: 50,
+        ry: 25
+    }
+
     constructor(head){
         this.head = head
     }
@@ -20,11 +38,15 @@ export default class Tree{
     visitAll(){
         this.traverse(this.head, 0);
         console.log(this.levels);
+        this.height = this.levels.length * 100;
     }
 
     traverse(node, level){
-        if(!this.levels[level]) this.levels[level] = 1;
-        else this.levels[level] += 1
+        if(!this.levels[level]){
+            this.levels[level] = [];
+            this.levels[level].push(node)
+        } 
+        else this.levels[level].push(node)
         console.log("node:", node.value, level);
         const children = node.getChildren();
         for(let child of children){
@@ -36,19 +58,41 @@ export default class Tree{
         }
     }
 
+    traverseLevels(level){
+        if(level < 0) return;
+        const size = this.levels[level].length;
+        const width = 150; // full width needed per node (actual width + margin)
+        const height = 100; // full height needed per node (actual height + margin)
+        const required = size * width;
+        const margin = (this.canvasWidth - required) / 2; // margin at which drawing will start
+        for(let i=0;i<this.levels[level].length;i++){
+            const node = this.levels[level][i];
+            console.log(node)
+            const x = margin + 150 * i;
+            // const x = margin + 150 * i + (level % 2 === 0)?this.shift*(-1):this.shift;
+            // const x = margin + 150 * i + ((level % 2 === 0)?this.shift*(-1):this.shift);
+            const y = this.topMargin + 120 * level
+            node.draw(this.canvas, x, y);
+        }
+        this.traverseLevels(level - 1)
+    }
+
     draw(canvas){
-        console.log(canvas);
-        
-        const rect = new window.fabric.Rect({
-            left: 100,
-            top: 100,
-            stroke: "green",
-            fill: "white", 
-            width: 100,
-            height: 50,
-            selectable: false,
-        })
-        canvas.add(rect);
+        this.canvas = canvas
+        this.canvasWidth = canvas.width;
+        this.canvasHeight = canvas.height;
+        this.traverseLevels(this.levels.length-1);
+        // console.log(this.levels)
+        // const rect = new window.fabric.Rect({
+        //     left: 100,
+        //     top: 100,
+        //     stroke: "green",
+        //     fill: "white", 
+        //     width: 100,
+        //     height: 50,
+        //     selectable: false,
+        // })
+        // canvas.add(rect);
     }
 }
 
