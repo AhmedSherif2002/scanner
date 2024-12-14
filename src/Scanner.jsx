@@ -9,9 +9,19 @@ import { Link } from "react-router-dom";
 
 function Scanner() {
   const [file, setFile] = useState(null);
+  const [textInput, setTextInput] = useState("");
+  const [useText, setUseText] = useState(false);
   const [output, setOutput] = useState([]);
   const [errors, setErrors] = useState([]);
-  const [tree,setTree] = useState("tree");
+  const [tree, setTree] = useState("tree");
+
+  const handleSelectText = () => {
+    setUseText((useText) => !useText);
+  };
+
+  const handleTextInput = (e) => {
+    setTextInput(e.target.value);
+  };
 
   const fileSelectHandle = (e) => {
     // console.log(e.target.files[0]);
@@ -58,20 +68,19 @@ function Scanner() {
     // Send a message to the main process
     // window.api.send("toMain", 1);
     // console.log(window.api);
-    
   }, []);
 
-  useEffect(()=>{
-    console.log("Tree:", tree)
-  },[tree])
+  useEffect(() => {
+    console.log("Tree:", tree);
+  }, [tree]);
 
   return (
     <>
       <div className="w-full m-auto py-12 flex flex-col items-center gap-8">
-        <div className="addFile w-1/3 m-auto flex flex-col">
+        <div className="addFile w-2/3 m-auto flex flex-col">
           <label
             htmlFor="file"
-            className="bg-green-500 text-white text-2xl font-semibold rounded-lg text-center cursor-pointer py-10"
+            className="w-1/3 m-auto bg-green-500 text-white text-xl font-semibold rounded-lg text-center cursor-pointer py-2"
           >
             Choose File
           </label>
@@ -87,6 +96,26 @@ function Scanner() {
           >
             Selected file: <span className="text-green-600">{file?.name}</span>
           </span>
+          <label
+            htmlFor="text"
+            className="bg-green-500 text-white text-xl font-semibold rounded-lg text-center cursor-pointer py-2 mt-5 w-1/3 m-auto"
+            onClick={handleSelectText}
+          >
+            Text Input
+          </label>
+          {useText && (
+            <textarea
+              id="text"
+              name="text"
+              rows="10"
+              cols="60"
+              placeholder="Enter your code here"
+              className=" focus-visible:outline-green-500
+            w-full border-2 p-5 rounded resize-none focus:animation-typewriter "
+              value={textInput}
+              onChange={handleTextInput}
+            ></textarea>
+          )}
         </div>
         <button
           className="font-bold bg-gray-200 w-fit text-green-700 hover:bg-gray-100 duration-500 text-xl px-4 py-2 rounded-md"
@@ -136,7 +165,15 @@ function Scanner() {
         >
           &#10227;
         </button>
-        <Link className={`${output.length === 0?"hidden":""} bg-slate-300 p-2 rounded-md font-semibold text-xl`} to={"/parser"} state={{output: output}}>Parse</Link>
+        <Link
+          className={`${
+            output.length === 0 ? "hidden" : ""
+          } bg-slate-300 p-2 rounded-md font-semibold text-xl`}
+          to={"/parser"}
+          state={{ output: output }}
+        >
+          Parse
+        </Link>
       </div>
     </>
   );
