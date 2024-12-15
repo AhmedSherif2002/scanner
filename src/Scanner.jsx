@@ -23,29 +23,57 @@ function Scanner() {
   };
 
   const parseHandle = () => {
-    // Step 1: Split the input text into lines and process each line
-    let inputLines = textInput.trim().split("\n");
+    if (useText) {
+      // Step 1: Split the input text into lines and process each line
+      let inputLines = textInput.trim().split("\n");
 
-    let inputOutput = inputLines.map((line) => {
-      // Step 2: Split each line by the comma delimiter
-      let [token, type] = line.split(",").map((str) => str.trim());
+      let inputOutput = inputLines.map((line) => {
+        // Step 2: Split each line by the comma delimiter
+        let [token, type] = line.split(",").map((str) => str.trim());
 
-      // Step 3: Check if the token exists in the preserved object and create the output object
-      return {
-        value: token,
-        type: type,
-      };
-    });
+        // Step 3: Check if the token exists in the preserved object and create the output object
+        return {
+          value: token,
+          type: type,
+        };
+      });
 
-    const parsingValid = program(inputOutput, { index: 0 });
-    setErrorParsing(parsingValid);
+      const parsingValid = program(inputOutput, { index: 0 });
+      setErrorParsing(parsingValid);
 
-    if (parsingValid == "success") {
-      setOutput(inputOutput);
-      navigate("/parser", { state: { output: inputOutput } });
-      return;
+      if (parsingValid == "success") {
+        setOutput(inputOutput);
+        navigate("/parser", { state: { output: inputOutput } });
+        return;
+      }
+      setOutput([]);
+    } else {
+      window.api.send("toMain", file.path);
+      let code = "";
+      window.api.receive("fromMain", (code) => {
+        let inputLines = code.trim().split("\n");
+
+        let inputOutput = inputLines.map((line) => {
+          let [token, type] = line.split(",").map((str) => str.trim());
+
+          return {
+            value: token,
+            type: type,
+          };
+        });
+
+        const parsingValid = program(inputOutput, { index: 0 });
+
+        setErrorParsing(parsingValid);
+
+        if (parsingValid == "success") {
+          setOutput(inputOutput);
+          navigate("/parser", { state: { output: inputOutput } });
+          return;
+        }
+        setOutput([]);
+      });
     }
-    setOutput([]);
   };
 
   const handleTextInput = (e) => {
@@ -128,7 +156,9 @@ function Scanner() {
         <div className="addFile w-2/3 m-auto flex flex-col">
           <label
             htmlFor="file"
-            className="w-1/3 m-auto bg-green-500 text-white text-xl font-semibold rounded-lg text-center cursor-pointer py-2"
+            className={`w-1/3 m-auto  text-white text-xl font-semibold rounded-lg text-center cursor-pointer py-2 ${
+              useText ? "bg-green-200" : "bg-green-500"
+            }`}
           >
             Choose File
           </label>
@@ -136,8 +166,9 @@ function Scanner() {
             type="file"
             name="file"
             id="file"
-            className="hidden"
+            className="hidden "
             onChange={fileSelectHandle}
+            disabled={useText}
           />
           <span
             className={`text-center ${file === null ? "hidden" : "visible"}`}
