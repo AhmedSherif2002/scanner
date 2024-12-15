@@ -118,12 +118,12 @@ export default class Tree{
 
         // check if canvas size wants to be extended
         console.log("windowWidth", this.windowWidth)
-        if(x >= this.canvas.width){
+        if(x + this.rect.width >= this.canvas.width){
             console.log("truuuuuuuueeeeeee")
             this.canvas.setWidth(x + 150);
             this.canvasWidth = x + 150;
         }
-        if(y >= this.canvas.height){
+        if(y + this.rect.height >= this.canvas.height){
             this.canvas.setHeight(y + 100);
         }
         console.log("canavs width:", this.canvas.width)

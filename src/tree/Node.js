@@ -131,6 +131,15 @@ export default class Node {
         const x2 = child.coords.x + this.rect.width / 2;
         const y2 = child.coords.y;
 
+        if(child.value === "ELSE"){
+            return new window.fabric.Line([x1,y1,x2,y2], {
+                stroke: "black",
+                strokeWidth: 1,
+                selectable: false,
+                strokeDashArray: [5,3]
+            })
+        }
+
         return new window.fabric.Line([x1,y1,x2,y2], {
             stroke: "black",
             strokeWidth: 1,
