@@ -120,7 +120,7 @@ function Scanner() {
             className="bg-green-500 text-white text-xl font-semibold rounded-lg text-center cursor-pointer py-2 mt-5 w-1/3 m-auto"
             onClick={handleSelectText}
           >
-            Text Input
+            {`Text Input ${useText ? "\u2193" : "\u2191"}`}
           </label>
           {useText && (
             <textarea
