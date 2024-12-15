@@ -184,7 +184,7 @@ function Scanner() {
         >
           &#10227;
         </button>
-        {errorParsing == "success" ? (
+        {errorParsing == "" || errorParsing == "success" ? (
           <Link
             className={`${
               output.length === 0 ? "hidden" : ""
@@ -200,7 +200,7 @@ function Scanner() {
               errorParsing != "success" ? "visible" : "hidden"
             } bg-red-400 w-1/3 rounded-lg p-2 text-white`}
           >
-            {errorParsing}
+            {`"Syntax Error" ${errorParsing}`}
           </span>
         )}
       </div>
