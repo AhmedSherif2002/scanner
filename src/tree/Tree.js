@@ -36,13 +36,6 @@ export default class Tree{
 
     print(){
         this.traverse(this.head, 0);
-        // console.log(this.levels);
-    }
-
-    visitAll(){
-        // this.traverse(this.head, 0);
-        console.log(this.levels);
-        // this.height = this.levels.length * 100;
     }
 
     traverse(node, level){
@@ -74,8 +67,6 @@ export default class Tree{
         node.level = level
 
         console.log("node:", node.value, level);
-        // Start drawing the node
-        // this.drawNode(node);
         if(node === this.head){
             const x = this.leftMargin  // x = margin
             const y = this.topMargin // y = margin + 100*level
@@ -120,15 +111,6 @@ export default class Tree{
         return true;
     }
 
-    // drawNode(node){
-    //     const levelSize = this.levels[node.level].length; // number of nodes in this level
-    //     const x = this.leftMargin + levelSize * (this.rect.width + this.gap);  // x = margin + 150*levelSize
-    //     const y = this.topMargin + node.level * (this.rect.height + this.gap); // y = margin + 100*level
-    //     node.draw(this.canvas, x, y);
-    //     // Add node to its level        
-    //     this.levels[node.level].push(node)
-    // }
-
     drawNode(node, x, y){
         node.draw(this.canvas, x, y);
         // Add node to its level        
@@ -156,10 +138,6 @@ export default class Tree{
         const margin = (this.canvasWidth - required) / 2; // margin at which drawing will start
         for(let i=0;i<this.levels[level].length;i++){
             const node = this.levels[level][i];
-            // console.log(node)
-            // const x = margin + 150 * i;
-            // const x = margin + 150 * i + (level % 2 === 0)?this.shift*(-1):this.shift;
-            const x = margin + 150 * i + ((level % 2 === 0)?this.shift*(-1):this.shift);
             const y = this.topMargin + 120 * level
             node.draw(this.canvas, x, y);
         }
@@ -173,18 +151,6 @@ export default class Tree{
         this.windowWidth = this.canvas.width;
         this.windowHeight = this.canvas.height
         this.traverseTree(this.head, 0);
-        // this.traverseLevels(this.levels.length-1);
-        console.log(this.levels)
-        // const rect = new window.fabric.Rect({
-        //     left: 100,
-        //     top: 100,
-        //     stroke: "green",
-        //     fill: "white", 
-        //     width: 100,
-        //     height: 50,
-        //     selectable: false,
-        // })
-        // canvas.add(rect);
     }
 }
 

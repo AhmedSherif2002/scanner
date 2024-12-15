@@ -86,13 +86,6 @@ export default class Node {
         // Add the text to the canvas
         canvas.add(text);
 
-        // connect with children
-        // for(let child of this.children){
-        //     const line = this.connectChild(child);
-        //     // console.log(line);
-        //     canvas.add(line);
-        // }
-
         // Connect with sibling
         if(this.leftSibling){
             const line = this.connectSibling();
@@ -151,7 +144,6 @@ export default class Node {
         const y1 = this.leftSibling.coords.y + this.rect.height / 2;
         
         // Current node coords where line goes into
-        // console.log(this, "left sibling:",this.leftSibling) 
         const x2 = this.coords.x;
         const y2 = this.coords.y + this.rect.height / 2;
 

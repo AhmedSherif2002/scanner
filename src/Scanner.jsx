@@ -16,6 +16,7 @@ function Scanner() {
   const [errors, setErrors] = useState([]);
   const [tree, setTree] = useState("tree");
   const [errorParsing, setErrorParsing] = useState("");
+  const [inputError, setInputError] = useState(null);
 
   const handleSelectText = () => {
     setUseText((useText) => !useText);
@@ -81,14 +82,15 @@ function Scanner() {
   };
 
   const fileSelectHandle = (e) => {
-    // console.log(e.target.files[0]);
     setFile(e.target.files[0]);
   };
   const scanHandle = (e) => {
-    // console.log(file);
-    // console.log("scanning");
     if (useText) {
       let code = textInput;
+      if(textInput.length === 0){
+        setInputError("text");
+        return;
+      }
       const { errors, tokens, parsingAvailable } = scan(code);
       setErrorParsing(parsingAvailable);
 
@@ -102,15 +104,16 @@ function Scanner() {
         return newTokens;
       });
     } else {
+      if(!file){
+        setInputError("file");
+        return;
+      }
       window.api.send("toMain", file.path);
       let code = "";
       window.api.receive("fromMain", (code) => {
-        // console.log(`Received ${code} from main process`);
         // code = data;
-        // console.log("c", code);
         const { errors, tokens, parsingAvailable } = scan(code);
         setErrorParsing(parsingAvailable);
-        // console.log(errors, tokens);
         if (errors.length !== 0) {
           setErrors(errors);
           return;
@@ -120,35 +123,9 @@ function Scanner() {
           let newTokens = tokens;
           return newTokens;
         });
-
-        // const head = program(tokens, { index: 0 });
-        // console.log(head);
-        // const tree = new Tree(head);
-        // setTree(tree);
-        // console.log(tree);
-        // tree.print()
-
-        // console.log(tokens);
       });
     }
   };
-
-  useEffect(() => {
-    // Called when message received from main process
-    window.api.receive("fromMain", (data) => {
-      // console.log(`Received ${data} from main process`);
-    });
-
-    // Send a message to the main process
-    // window.api.send("toMain", 1);
-    // console.log(window.api);
-  }, []);
-
-  useEffect(() => {
-    console.log("Tree:", tree);
-  }, [tree]);
-
-  console.log(output);
 
   return (
     <>
@@ -202,7 +179,7 @@ function Scanner() {
               !textInput && !file ? "text-stone-500" : "text-green-700"
             } hover:bg-gray-100 duration-500 text-xl px-4 py-2 rounded-md`}
             onClick={scanHandle}
-            disabled={!textInput && !file}
+            // disabled={!textInput && !file}
           >
             Scan
           </button>
@@ -218,6 +195,10 @@ function Scanner() {
               Parse
             </button>
           )}
+        </div>
+
+        <div className={`input-error ${!inputError?"hidden":"visible"}`}>
+          <p className="text-red-400">{inputError === "file"?"Choose a valid file":"Enter valid input"}</p>
         </div>
 
         <div
