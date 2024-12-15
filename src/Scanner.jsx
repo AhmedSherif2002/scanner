@@ -4,10 +4,11 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 import { scan } from "./functions";
 import Tree from "./tree/Tree";
-import program from "./tree/program";
-import { Link } from "react-router-dom";
+import program from "./ParserChecker/program";
+import { Link, useNavigate } from "react-router-dom";
 
 function Scanner() {
+  const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [textInput, setTextInput] = useState("");
   const [useText, setUseText] = useState(false);
@@ -19,6 +20,32 @@ function Scanner() {
   const handleSelectText = () => {
     setUseText((useText) => !useText);
     setTextInput("");
+  };
+
+  const parseHandle = () => {
+    // Step 1: Split the input text into lines and process each line
+    let inputLines = textInput.trim().split("\n");
+
+    let inputOutput = inputLines.map((line) => {
+      // Step 2: Split each line by the comma delimiter
+      let [token, type] = line.split(",").map((str) => str.trim());
+
+      // Step 3: Check if the token exists in the preserved object and create the output object
+      return {
+        value: token,
+        type: type,
+      };
+    });
+
+    const parsingValid = program(inputOutput, { index: 0 });
+    setErrorParsing(parsingValid);
+
+    if (parsingValid == "success") {
+      setOutput(inputOutput);
+      navigate("/parser", { state: { output: inputOutput } });
+      return;
+    }
+    setOutput([]);
   };
 
   const handleTextInput = (e) => {
@@ -93,6 +120,8 @@ function Scanner() {
     console.log("Tree:", tree);
   }, [tree]);
 
+  console.log(output);
+
   return (
     <>
       <div className="w-full m-auto py-12 flex flex-col items-center gap-8">
@@ -146,12 +175,13 @@ function Scanner() {
           >
             Scan
           </button>
-          {!output.length && (
+
+          {output.length == 0 && (
             <button
               className={`font-bold bg-gray-200 w-fit ${
                 !textInput && !file ? "text-stone-500" : "text-green-700"
               } hover:bg-gray-100 duration-500 text-xl px-4 py-2 rounded-md`}
-              onClick={scanHandle}
+              onClick={parseHandle}
               disabled={!textInput && !file}
             >
               Parse
