@@ -18,10 +18,12 @@ function ifStmt(output, indexObj) {
   const node3 = stmtSequence(output, indexObj);
 
   // match(ELSE) (OPTIONAL)
+  let elseNode;
   if (output[indexObj.index]?.type === "ELSE") {
-    match(output, indexObj, "ELSE", "Missing ELSE token in ifStmt");
+    elseNode = match(output, indexObj, "ELSE", "Missing ELSE token in ifStmt");
     // match(stmtSequence)
-    stmtSequence(output, indexObj);
+    const elseChild = stmtSequence(output, indexObj);
+    elseNode.addChild(elseChild);
   }
 
   // match(END)
@@ -29,6 +31,7 @@ function ifStmt(output, indexObj) {
 
   node.addChild(node2);
   node.addChild(node3);
+  node.addChild(elseNode);
   return node;
 }
 
