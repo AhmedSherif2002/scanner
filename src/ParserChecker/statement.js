@@ -16,6 +16,8 @@ function statement(output, indexObj) {
     readStmt(output, indexObj);
   } else if (output[indexObj.index]?.type === "WRITE") {
     writeStmt(output, indexObj);
+  } else {
+    throw new Error("Invalid , there must be a new valid statement ");
   }
 }
 export default statement;

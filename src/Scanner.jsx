@@ -136,12 +136,29 @@ function Scanner() {
             ></textarea>
           )}
         </div>
-        <button
-          className="font-bold bg-gray-200 w-fit text-green-700 hover:bg-gray-100 duration-500 text-xl px-4 py-2 rounded-md"
-          onClick={scanHandle}
-        >
-          Submit
-        </button>
+        <div className="flex gap-56">
+          <button
+            className={`font-bold bg-gray-200 w-fit ${
+              !textInput && !file ? "text-stone-500" : "text-green-700"
+            } hover:bg-gray-100 duration-500 text-xl px-4 py-2 rounded-md`}
+            onClick={scanHandle}
+            disabled={!textInput && !file}
+          >
+            Scan
+          </button>
+          {!output.length && (
+            <button
+              className={`font-bold bg-gray-200 w-fit ${
+                !textInput && !file ? "text-stone-500" : "text-green-700"
+              } hover:bg-gray-100 duration-500 text-xl px-4 py-2 rounded-md`}
+              onClick={scanHandle}
+              disabled={!textInput && !file}
+            >
+              Parse
+            </button>
+          )}
+        </div>
+
         <div
           className={`tokens-result w-1/3 ${
             errors.length !== 0 || output.length === 0 ? "hidden" : "visible"
@@ -179,7 +196,7 @@ function Scanner() {
         <button
           onClick={() => window.location.reload()}
           className={`${
-            file === null ? "hidden" : "visible"
+            file === null && !textInput ? "hidden" : "visible"
           } bg-green-400 px-4 py-2 text-2xl font-semibold text-white rounded-lg`}
         >
           &#10227;
