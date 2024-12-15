@@ -1,5 +1,6 @@
 import simpleExp from "./simpleExp";
 import match from "./match";
+
 function exp(output, indexObj) {
   simpleExp(output, indexObj);
   if (output[indexObj.index]?.type === "LESSTHAN") {

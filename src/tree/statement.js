@@ -6,18 +6,20 @@ import match from "./match";
 import repeatStmt from "./repeatStmt";
 
 function statement(output, indexObj) {
+  let node;
   if (output[indexObj.index]?.type === "IF") {
-    ifStmt(output, indexObj);
+    node = ifStmt(output, indexObj);
   } else if (output[indexObj.index]?.type === "REPEAT") {
-    repeatStmt(output, indexObj);
+    node = repeatStmt(output, indexObj);
   } else if (output[indexObj.index]?.type === "IDENTIFIER") {
-    assignStmt(output, indexObj);
+    node = assignStmt(output, indexObj);
   } else if (output[indexObj.index]?.type === "READ") {
-    readStmt(output, indexObj);
+    node = readStmt(output, indexObj);
   } else if (output[indexObj.index]?.type === "WRITE") {
-    writeStmt(output, indexObj);
+    node = writeStmt(output, indexObj);
   } else {
     throw new Error("Invalid , there must be a new valid statement ");
   }
+  return node;
 }
 export default statement;

@@ -15,6 +15,7 @@ let preserved = {
   ";": "SEMICOLON",
   if: "IF",
   then: "THEN",
+  else: "ELSE",
   end: "END",
   read: "READ",
   write: "WRITE",
@@ -83,11 +84,11 @@ const parseToken = (token, state) => {
 };
 
 const errorCheck = (currState, c, token) => {
-  if (currState === "String" && /[0-9]/.test(c)) {
-    handleError(currState, token, c, "Unexpected Token: ");
-    currState = "Error";
-    return true;
-  }
+  // if (currState === "String" && /[0-9]/.test(c)) {
+  //   handleError(currState, token, c, "Unexpected Token: ");
+  //   currState = "Error";
+  //   return true;
+  // }
   if (currState === "Number" && /[a-zA-Z]/.test(c)) {
     handleError(currState, token, c, "Unexpected Token: ");
     currState = "Error";
@@ -165,6 +166,7 @@ const scan = (code) => {
       currState = "Initial";
     }
     if (errorCheck(currState, c, token)) {
+      console.log("Error", c, token)
       continue;
     }
     if (/[a-zA-Z]/.test(c)) {
@@ -175,10 +177,11 @@ const scan = (code) => {
       } else {
         currState = "Operator";
         if (c === "(") stack.push("(");
-        if ("()".includes(c)) {
+        if ("();".includes(c)) {
           if ("()".includes(token) || prevState === "Operator") {
             parseToken(token, prevState);
             token = c;
+
             continue;
           }
         } else if (prevState === "Operator" && token !== ")") {
@@ -210,8 +213,9 @@ const scan = (code) => {
     }
   }
   //   console.log(output);
-  console.log(program(output, { index: 0 }));
-  return { errors, tokens: output };
+  // console.log(program(output, { index: 0 }));
+  const parsingAvailable = program(output, { index: 0 });
+  return { errors, tokens: output, parsingAvailable };
 };
 
 // for(token of output){
