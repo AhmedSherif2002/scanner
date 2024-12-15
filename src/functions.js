@@ -15,6 +15,7 @@ let preserved = {
   ";": "SEMICOLON",
   if: "IF",
   then: "THEN",
+  else: "ELSE",
   end: "END",
   read: "READ",
   write: "WRITE",
@@ -83,11 +84,11 @@ const parseToken = (token, state) => {
 };
 
 const errorCheck = (currState, c, token) => {
-  if (currState === "String" && /[0-9]/.test(c)) {
-    handleError(currState, token, c, "Unexpected Token: ");
-    currState = "Error";
-    return true;
-  }
+  // if (currState === "String" && /[0-9]/.test(c)) {
+  //   handleError(currState, token, c, "Unexpected Token: ");
+  //   currState = "Error";
+  //   return true;
+  // }
   if (currState === "Number" && /[a-zA-Z]/.test(c)) {
     handleError(currState, token, c, "Unexpected Token: ");
     currState = "Error";
@@ -165,6 +166,7 @@ const scan = (code) => {
       currState = "Initial";
     }
     if (errorCheck(currState, c, token)) {
+      console.log("Error", c, token)
       continue;
     }
     if (/[a-zA-Z]/.test(c)) {
