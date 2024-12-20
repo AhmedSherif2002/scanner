@@ -55,6 +55,7 @@ let currState = "Initial";
 let prevState = "Initial";
 
 const parseToken = (token, state) => {
+  console.log("parsing:", "token:", token, "state:", state)
   if (state === "Comment") return;
   if (state === "String") {
     const type = preserved[token] ? preserved[token] : "IDENTIFIER";
@@ -76,12 +77,22 @@ const parseToken = (token, state) => {
     });
   }
   if (state === "Operator") {
+    handleOps(token)
+    // output.push({
+    //   value: token,
+    //   type: preserved[token],
+    // });
+  }
+};
+
+const handleOps= (tokenString)=>{
+  for(let token of tokenString){
     output.push({
       value: token,
       type: preserved[token],
     });
   }
-};
+}
 
 const errorCheck = (currState, c, token) => {
   // if (currState === "String" && /[0-9]/.test(c)) {
@@ -89,45 +100,46 @@ const errorCheck = (currState, c, token) => {
   //   currState = "Error";
   //   return true;
   // }
-  if (currState === "Number" && /[a-zA-Z]/.test(c)) {
-    handleError(currState, token, c, "Unexpected Token: ");
-    currState = "Error";
-    return true;
-  }
-  if (currState === "Operator" && "=+-*/;<".includes(c) && token.endsWith(c)) {
-    handleError(currState, token, c, "Unexpected Token: ");
-    currState = "Error";
-    return true;
-  }
-  if (currState === "AssignOp") {
-    if ((token === ":=" && c === "=") || (token === ":" && c !== "=")) {
-      handleError(currState, token, c, "Unexpected Token: ");
-      currState = "Error";
-      return true;
-    }
-  }
-  if (c === ")") {
-    // console.log("stack", stack);
-    if (stack.at(-1) !== "(") {
-      handleError(currState, token, c, "Open Bracket Missing: ");
-      currState = "Error";
-      return true;
-    } else {
-      stack.pop();
-      //   console.log("stack", stack);
-    }
-  }
-  if (c === "}") {
-    // console.log("stack", stack);
-    if (stack.at(-1) !== "{") {
-      handleError(currState, token, c, "Open Bracket Missing: ");
-      currState = "Error";
-      return true;
-    } else {
-      stack.pop();
-      //   console.log("stack", stack);
-    }
-  }
+  // if (currState === "Number" && /[a-zA-Z]/.test(c)) {
+  //   handleError(currState, token, c, "Unexpected Token: ");
+  //   currState = "Error";
+  //   return true;
+  // }
+  // if (currState === "Operator" && "=+-*/;<".includes(c) && token.endsWith(c)) {
+  // if (currState === "Operator" && "=+-*/;<".includes(c)) {
+  //   handleError(currState, token, c, "Unexpected Token: ");
+  //   currState = "Error";
+  //   return true;
+  // }
+  // if (currState === "AssignOp") {
+  //   if ((token === ":=" && c === "=") || (token === ":" && c !== "=")) {
+  //     handleError(currState, token, c, "Unexpected Token: ");
+  //     currState = "Error";
+  //     return true;
+  //   }
+  // }
+  // if (c === ")") {
+  //   // console.log("stack", stack);
+  //   if (stack.at(-1) !== "(") {
+  //     handleError(currState, token, c, "Open Bracket Missing: ");
+  //     currState = "Error";
+  //     return true;
+  //   } else {
+  //     stack.pop();
+  //     //   console.log("stack", stack);
+  //   }
+  // }
+  // if (c === "}") {
+  //   // console.log("stack", stack);
+  //   if (stack.at(-1) !== "{") {
+  //     handleError(currState, token, c, "Open Bracket Missing: ");
+  //     currState = "Error";
+  //     return true;
+  //   } else {
+  //     stack.pop();
+  //     //   console.log("stack", stack);
+  //   }
+  // }
   return false;
 };
 
@@ -151,7 +163,7 @@ const scan = (code) => {
   //   console.log(code);
   code += "\n";
   for (let c of code) {
-    // console.log(c);
+    console.log("current",c, "state:", currState, "prevState:", prevState);
     if (currState === "Comment") {
       if (c !== "}") continue;
       else {
@@ -174,19 +186,28 @@ const scan = (code) => {
     } else if ("=+-*/();<".includes(c)) {
       if (c === "=" && currState === "AssignOp") {
         currState = "AssignOp";
-      } else {
+      }
+      else {
         currState = "Operator";
-        if (c === "(") stack.push("(");
-        if ("();".includes(c)) {
-          if ("()".includes(token) || prevState === "Operator") {
-            parseToken(token, prevState);
-            token = c;
-
-            continue;
-          }
-        } else if (prevState === "Operator" && token !== ")") {
-          handleError(currState, token, c, "Unexpected Token: ");
-        }
+        // if(prevState === "Operator"){
+        //   token += c
+        // }else{
+        //   parseToken(token, prevState);
+        //   token = c
+        //   continue
+        // }
+        // parseToken(token, prevState);
+        // if (c === "(") stack.push("(");
+        // if ("();".includes(c)) {
+        //   if ("()".includes(token) || prevState === "Operator") {
+        //     parseToken(token, prevState);
+        //     token = c;
+        //     prevState = currState
+        //     continue;
+        //   }
+        // } else if (prevState === "Operator" && token !== ")") {
+        //   handleError(currState, token, c, "Unexpected Token: ");
+        // }
       }
     } else if (/[0-9]/.test(c)) {
       currState = "Number";
@@ -204,14 +225,14 @@ const scan = (code) => {
     }
     prevState = currState;
   }
-  if (stack.length !== 0) {
-    for (let bracket of stack) {
-      errors.push({
-        type: "Bracket Not Closed: ",
-        string: bracket,
-      });
-    }
-  }
+  // if (stack.length !== 0) {
+  //   for (let bracket of stack) {
+  //     errors.push({
+  //       type: "Bracket Not Closed: ",
+  //       string: bracket,
+  //     });
+  //   }
+  // }
   //   console.log(output);
   // console.log(program(output, { index: 0 }));
   const parsingAvailable = program(output, { index: 0 });
