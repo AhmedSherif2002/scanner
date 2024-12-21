@@ -44,7 +44,7 @@ export default class Tree{
             this.levels[level].push(node)
         } 
         else this.levels[level].push(node)
-        // console.log("node:", node.value, level);
+        console.log("node:", node.value, level);
         const children = node.getChildren();
         for(let child of children){
             this.traverse(child, level + 1);
@@ -66,7 +66,7 @@ export default class Tree{
         // assign level to the node
         node.level = level
 
-        console.log("node:", node.value, level);
+        // console.log("node:", node.value, level);
         if(node === this.head){
             const x = this.leftMargin  // x = margin
             const y = this.topMargin // y = margin + 100*level
@@ -87,7 +87,7 @@ export default class Tree{
             const line = node.connectChild(child);
             this.canvas.add(line);
             this.traverseTree(child, level + 1);
-            console.log("child",child)
+            // console.log("child",child)
             
         }
         if(node.hasSibling()){
@@ -95,7 +95,7 @@ export default class Tree{
             sibling.level = level
             const x = node.coords.x + this.rect.width + this.gap;
             const y = this.topMargin + (this.rect.height+this.gap)*level;
-            console.log("sibling", sibling)
+            // console.log("sibling", sibling)
             this.drawNode(sibling, x, y);
             this.traverseTree(sibling, level);
         }
@@ -104,7 +104,7 @@ export default class Tree{
     areCoordsValid(x, level){
         if(this.levels[level].length === 0) return true
         const behindNode = this.levels[level][this.levels[level].length-1];
-        console.log("Behind node:",behindNode, this.levels[level], level, this.levels)
+        // console.log("Behind node:",behindNode, this.levels[level], level, this.levels)
         if(behindNode.coords.x + this.rect.width >= x){
             return false;
         }
@@ -117,16 +117,19 @@ export default class Tree{
         this.levels[node.level].push(node);
 
         // check if canvas size wants to be extended
-        console.log("windowWidth", this.windowWidth)
+        // console.log("windowWidth", this.windowWidth)
         if(x + this.rect.width >= this.canvas.width){
-            console.log("truuuuuuuueeeeeee")
+            // console.log("truuuuuuuueeeeeee")
             this.canvas.setWidth(x + 150);
             this.canvasWidth = x + 150;
         }
         if(y + this.rect.height >= this.canvas.height){
             this.canvas.setHeight(y + 100);
         }
-        console.log("canavs width:", this.canvas.width)
+        if(x < 0){
+            panCanvas(this.canvas, 100, 0)
+        }
+        // console.log("canavs width:", this.canvas.width)
     }
 
     traverseLevels(level){
@@ -154,29 +157,9 @@ export default class Tree{
     }
 }
 
-// const node = new Node("0");
-// const node1 = new Node("1");
-// const node2 = new Node("2");
-// const node3 = new Node("3");
-// const node4 = new Node("4");
-// const node5 = new Node("5");
-// const node6 = new Node("6");
-// const node7 = new Node("7");
-// const node8 = new Node("8");
-// const node9 = new Node("9");
-// const node10 = new Node("10");
-
-// node1.addChild(node2);
-// node.addChild(node1);
-// node1.addChild(node3)
-// node3.addChild(node5);
-// node.addChild(node4);
-// node4.addChild(node7);
-// node4.addSibling(node6);
-// node6.addSibling(node8);
-// node6.addChild(node9);
-// node9.addSibling(node10);
-
-// export const tree = new Tree(node);
-
-// tree.print();
+function panCanvas(canvas, deltaX, deltaY) {
+    const transform = canvas.viewportTransform;
+    transform[4] += deltaX; // Update x-axis offset
+    transform[5] += deltaY; // Update y-axis offset
+    canvas.requestRenderAll(); // Re-render the canvas
+}
