@@ -49,7 +49,6 @@ let delimiters = [" ", "\n", "\r", "\t"];
 let token = "";
 let output = [];
 let errors = [];
-let stack = [];
 let currState = "Initial";
 let prevState = "Initial";
 
@@ -89,18 +88,16 @@ const handleOps= (tokenString)=>{
   }
 }
 
-const handleError = (state, token, c, type) => {
-  const string = token + c;
+const handleError = (c, type) => {
   errors.push({
     type,
-    string,
+    c,
   });
 };
 
 const scan = (code) => {
   output = [];
   errors = [];
-  stack = [];
   currState = "Initial";
   prevState = "Initial";
   token = "";
@@ -115,7 +112,6 @@ const scan = (code) => {
     }
     if (c === "{") {
       currState = "Comment";
-      stack.push("{");
     }
     if (delimiters.includes(c)) {
       currState = "Initial";
@@ -134,7 +130,7 @@ const scan = (code) => {
     } else if (c === ":") {
       currState = "AssignOp";
     } else if (!delimiters.includes(c) && c !== "{" && c !== "}") {  // Unknown token 
-      handleError(currState, "", c, "Unknown Token: ");
+      handleError(c, "Unknown Token: ");
     }
     if (prevState !== currState) {
       parseToken(token, prevState);
